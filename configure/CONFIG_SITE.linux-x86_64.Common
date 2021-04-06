@@ -1,8 +1,7 @@
 CROSS_COMPILER_TARGET_ARCHS =
 
 # Enable file plugins and define sources
-# WITH_HDF5     = YES
-HDF5_EXTERNAL = YES
+WITH_HDF5     = YES
 HDF5_LIB      = /usr/lib/x86_64-linux-gnu/hdf5/serial/
 HDF5_INCLUDE  = /usr/include/hdf5/serial
 
@@ -25,4 +24,6 @@ WITH_BLOSC    = YES
 BLOSC_EXTERNAL= YES
 
 WITH_CBF      = YES
-CBF_EXTERNAL  = NO
+CBF_EXTERNAL  = YES
+
+WITH_PVA      = YES
