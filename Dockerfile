@@ -33,9 +33,9 @@ RUN ./add_module.sh areaDetector ADCore ADCORE ${ADCORE_VERSION}
 RUN ./add_module.sh paulscherrerinstitute ADZMQ ADZMQ ${ADZMQ_BRANCH}
 
 # add CONFIG_SITE.linux and RELEASE.local
-COPY --chown=1000 configure ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}/configure
-COPY --chown=1000 configure ${SUPPORT}/ADCore-${ADCORE_VERSION}/configure
-COPY --chown=1000 configure/RELEASE.local ${SUPPORT}/ADZMQ-${ADZMQ_VERSION}/configure
+COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}/configure
+COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ADCore-${ADCORE_VERSION}/configure
+COPY --chown=${USER_UID}:${USER_GID} configure/RELEASE.local ${SUPPORT}/ADZMQ-${ADZMQ_VERSION}/configure
 
 # update dependencies and build
 RUN make release && \
@@ -45,7 +45,7 @@ RUN make release && \
     make clean
 
 RUN ./add_module.sh controls/support ffmpegServer FFMPEGSERVER ${FFMPEG_SRV_VERSION} gitlab.diamond.ac.uk
-COPY --chown=1000 configure/RELEASE.local ${SUPPORT}/ffmpegServer-${FFMPEG_SRV_VERSION}/configure
+COPY --chown=${USER_UID}:${USER_GID} configure/RELEASE.local ${SUPPORT}/ffmpegServer-${FFMPEG_SRV_VERSION}/configure
 
 RUN make release && \
     ffmpegServer-${FFMPEG_SRV_VERSION}/install.sh && \
