@@ -1,6 +1,6 @@
 # EPICS SynApps Dockerfile
 ARG REGISTRY=gcr.io/diamond-privreg/controls/prod
-ARG SYNAPPS_VERSION=6.2b1.0
+ARG SYNAPPS_VERSION=6.2b1.1
 
 FROM ${REGISTRY}/epics/epics-synapps:${SYNAPPS_VERSION}
 
