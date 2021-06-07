@@ -1,4 +1,5 @@
-# EPICS SynApps Dockerfile
+# EPICS ADCore Dockerfile
+# Adds the Area Detector base support required by all AD images
 ARG REGISTRY=gcr.io/diamond-pubreg/controls/prod
 ARG MODULES_VERSION=1.0
 
@@ -25,8 +26,6 @@ USER ${USERNAME}
 
 ARG ADSUPPORT_VERSION=R1-9-1
 ARG ADCORE_VERSION=R3-10
-ARG ADZMQ_VERSION=1-1-2
-ARG ADZMQ_BRANCH=1.1.2
 ARG FFMPEG_SRV_VERSION=replace_zeranoe_linux_only
 
 RUN python3 module.py add areaDetector ADSupport ADSUPPORT ${ADSUPPORT_VERSION}
@@ -35,9 +34,9 @@ RUN python3 module.py add areaDetector ADCore ADCORE ${ADCORE_VERSION}
 # add CONFIG_SITE.linux and RELEASE.local
 COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}/configure
 COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ADCore-${ADCORE_VERSION}/configure
-RUN python3 module.py dependencies
 
 # update dependencies and build
+RUN python3 module.py dependencies
 RUN make -C ADSupport-${ADSUPPORT_VERSION} && \
     make -C ADCore-${ADCORE_VERSION} && \
     make clean
