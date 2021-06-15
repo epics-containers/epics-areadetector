@@ -26,7 +26,6 @@ USER ${USERNAME}
 # get additional support modules
 ARG ADSUPPORT_VERSION=R1-9-1
 ARG ADCORE_VERSION=R3-10
-ARG FFMPEG_SRV_VERSION=replace_zeranoe_linux_only
 
 RUN python3 module.py add areaDetector ADSupport ADSUPPORT ${ADSUPPORT_VERSION}
 RUN python3 module.py add areaDetector ADCore ADCORE ${ADCORE_VERSION}
@@ -41,13 +40,3 @@ RUN make -C ADSupport-${ADSUPPORT_VERSION} && \
     make -C ADCore-${ADCORE_VERSION} && \
     make clean
 
-# fetch ffmpegserver (used for streaming images from AD pipeline)
-RUN python3 module.py add controls/support ffmpegServer FFMPEGSERVER ${FFMPEG_SRV_VERSION} gitlab.diamond.ac.uk
-COPY --chown=${USER_UID}:${USER_GID} configure/RELEASE.local ${SUPPORT}/ffmpegServer-${FFMPEG_SRV_VERSION}/configure
-RUN python3 module.py dependencies
-
-# build ffmpegserver
-RUN ffmpegServer-${FFMPEG_SRV_VERSION}/install.sh && \
-    make -C ffmpegServer-${FFMPEG_SRV_VERSION}/vendor && \
-    make -C ffmpegServer-${FFMPEG_SRV_VERSION} && \
-    make clean -C ffmpegServer-${FFMPEG_SRV_VERSION}
