@@ -24,8 +24,8 @@ RUN apt-get update && apt-get upgrade -y && \
 USER ${USERNAME}
 
 # get additional support modules
-ARG ADSUPPORT_VERSION=R1-9-1
-ARG ADCORE_VERSION=R3-10
+ARG ADSUPPORT_VERSION=R1-10
+ARG ADCORE_VERSION=R3-11
 
 RUN python3 module.py add areaDetector ADSupport ADSUPPORT ${ADSUPPORT_VERSION}
 RUN python3 module.py add areaDetector ADCore ADCORE ${ADCORE_VERSION}
@@ -39,4 +39,3 @@ RUN python3 module.py dependencies
 RUN make -C ADSupport-${ADSUPPORT_VERSION} && \
     make -C ADCore-${ADCORE_VERSION} && \
     make clean
-
