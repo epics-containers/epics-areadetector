@@ -1,9 +1,9 @@
 # EPICS ADCore Dockerfile
 # Adds the Area Detector base support required by all AD images
-ARG REGISTRY=gcr.io/diamond-pubreg/controls/prod
-ARG MODULES_VERSION=1.0
+ARG REGISTRY=ghcr.io/epics-containers
+ARG MODULES_VERSION=4.41r1.0
 
-FROM ${REGISTRY}/epics/epics-modules:${MODULES_VERSION}
+FROM ${REGISTRY}/epics-modules:${MODULES_VERSION}
 
 # install additional tools and libs
 USER root
@@ -21,9 +21,9 @@ RUN apt-get update && apt-get upgrade -y && \
     xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# get additional support modules
 USER ${USERNAME}
 
+# get additional support modules
 ARG ADSUPPORT_VERSION=R1-9-1
 ARG ADCORE_VERSION=R3-10
 ARG FFMPEG_SRV_VERSION=replace_zeranoe_linux_only
