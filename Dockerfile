@@ -52,3 +52,15 @@ RUN make -j -C  ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} && \
     make -j -C  ${SUPPORT}/ADCore-${ADCORE_VERSION} && \
     make -j -C  ${ADKAFKA_DIR} && \
     make -j clean
+
+# add ffmpegserver for streaming detector images to an mpeg viewer
+ENV FFMPEG_SRV_VERSION=linux-vendor
+RUN python3 module.py add areaDetector ffmpegServer FFMPEGSERVER ${FFMPEG_SRV_VERSION}
+COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ffmpegServer-${FFMPEG_SRV_VERSION}/configure
+RUN python3 module.py dependencies
+
+# build ffmpegserver
+RUN ffmpegServer-${FFMPEG_SRV_VERSION}/install.sh && \
+    make -C ffmpegServer-${FFMPEG_SRV_VERSION}/vendor && \
+    make -C ffmpegServer-${FFMPEG_SRV_VERSION} && \
+    make clean -C ffmpegServer-${FFMPEG_SRV_VERSION}
