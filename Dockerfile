@@ -1,7 +1,7 @@
 # EPICS ADCore Dockerfile
 # Adds the Area Detector base support required by all AD images
 ARG REGISTRY=ghcr.io/epics-containers
-ARG MODULES_VERSION=4.41r1.1
+ARG MODULES_VERSION=4.41r2.0
 
 FROM ${REGISTRY}/epics-modules:${MODULES_VERSION}
 
@@ -11,7 +11,6 @@ USER root
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-    curl \
     libblosc-dev \
     libhdf5-dev \
     libjpeg-dev \
@@ -23,17 +22,18 @@ RUN apt-get update && apt-get upgrade -y && \
     && rm -rf /var/lib/apt/lists/*
 
 # add the kafka client library
-RUN curl -L https://github.com/edenhill/librdkafka/archive/v1.7.0.tar.gz | tar xzf - && \
-    cd librdkafka-1.7.0/ && \
+ENV LIBKAFKA_VERSION=1.7.0
+RUN busybox wget https://github.com/edenhill/librdkafka/archive/v${LIBKAFKA_VERSION}.tar.gz \
+                -O - | tar xzf - && \
+    cd librdkafka-${LIBKAFKA_VERSION}/ && \
     ./configure --prefix=/usr && \
-    make -j && \
-    make install
+    make -j && make install && cd .. && rm -fr librdkafka-${LIBKAFKA_VERSION}
 
 USER ${USERNAME}
 
 # get additional support modules
-ARG ADSUPPORT_VERSION=R1-9-1
-ARG ADCORE_VERSION=R3-10
+ENV ADSUPPORT_VERSION=R1-9-1
+ENV ADCORE_VERSION=R3-10
 ENV ADKAFKA_VERSION=0.1
 ENV ADKAFKA_DIR=${SUPPORT}/ADKafka-0-1
 
@@ -52,15 +52,3 @@ RUN make -j -C  ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} && \
     make -j -C  ${SUPPORT}/ADCore-${ADCORE_VERSION} && \
     make -j -C  ${ADKAFKA_DIR} && \
     make -j clean
-
-# add ffmpegserver for streaming detector images to an mpeg viewer
-ENV FFMPEG_SRV_VERSION=linux-vendor
-RUN python3 module.py add areaDetector ffmpegServer FFMPEGSERVER ${FFMPEG_SRV_VERSION}
-COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ffmpegServer-${FFMPEG_SRV_VERSION}/configure
-RUN python3 module.py dependencies
-
-# build ffmpegserver
-RUN ffmpegServer-${FFMPEG_SRV_VERSION}/install.sh && \
-    make -C ffmpegServer-${FFMPEG_SRV_VERSION}/vendor && \
-    make -C ffmpegServer-${FFMPEG_SRV_VERSION} && \
-    make clean -C ffmpegServer-${FFMPEG_SRV_VERSION}
