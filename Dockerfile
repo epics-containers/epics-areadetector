@@ -86,6 +86,6 @@ COPY --from=developer /usr/lib/librdkafka* /usr/lib/
 USER ${USERNAME}
 
 # get the products from the build stage
-COPY --from=developer ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}
-COPY --from=developer ${SUPPORT}/ADCore-${ADCORE_VERSION} ${SUPPORT}/ADCore-${ADCORE_VERSION}
-COPY --from=developer ${SUPPORT}/${ADKAFKA_DIR} ${SUPPORT}/${ADKAFKA_DIR}
+COPY --from=developer --chown=${USER_UID}:${USER_GID} ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}
+COPY --from=developer --chown=${USER_UID}:${USER_GID} ${SUPPORT}/ADCore-${ADCORE_VERSION} ${SUPPORT}/ADCore-${ADCORE_VERSION}
+COPY --from=developer --chown=${USER_UID}:${USER_GID} ${SUPPORT}/${ADKAFKA_DIR} ${SUPPORT}/${ADKAFKA_DIR}
