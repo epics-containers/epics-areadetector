@@ -3,9 +3,19 @@
 ARG REGISTRY=ghcr.io/epics-containers
 ARG MODULES_VERSION=4.41r3.0
 
+ARG ADSUPPORT_VERSION=R1-9-1
+ARG ADCORE_VERSION=R3-10
+ARG ADKAFKA_VERSION=0.1
+ARG ADKAFKA_DIR=ADKafka-0-1
+
 ##### build stage ##############################################################
 
 FROM ${REGISTRY}/epics-modules:${MODULES_VERSION} AS developer
+
+ARG ADSUPPORT_VERSION
+ARG ADCORE_VERSION
+ARG ADKAFKA_VERSION
+ARG ADKAFKA_DIR
 
 # install additional packages
 USER root
@@ -34,11 +44,6 @@ RUN busybox wget https://github.com/edenhill/librdkafka/archive/v${LIBKAFKA_VERS
 USER ${USERNAME}
 
 # get additional support modules
-ENV ADSUPPORT_VERSION=R1-9-1
-ENV ADCORE_VERSION=R3-10
-ENV ADKAFKA_VERSION=0.1
-ENV ADKAFKA_DIR=${SUPPORT}/ADKafka-0-1
-
 RUN python3 module.py add areaDetector ADSupport ADSUPPORT ${ADSUPPORT_VERSION}
 RUN python3 module.py add areaDetector ADCore ADCORE ${ADCORE_VERSION}
 RUN python3 module.py add dls-controls ADKafka ADKAFKA ${ADKAFKA_VERSION}
@@ -46,7 +51,7 @@ RUN python3 module.py add dls-controls ADKafka ADKAFKA ${ADKAFKA_VERSION}
 # add CONFIG_SITE.linux and RELEASE.local
 COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}/configure
 COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/ADCore-${ADCORE_VERSION}/configure
-COPY --chown=${USER_UID}:${USER_GID} configure ${ADKAFKA_DIR}/configure
+COPY --chown=${USER_UID}:${USER_GID} configure ${SUPPORT}/${ADKAFKA_DIR}/configure
 
 # update dependencies and build
 RUN python3 module.py dependencies
@@ -58,6 +63,11 @@ RUN make -j -C  ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} && \
 ##### runtime stage ############################################################
 
 FROM ${REGISTRY}/epics-modules:${MODULES_VERSION}.run AS runtime
+
+ARG ADSUPPORT_VERSION
+ARG ADCORE_VERSION
+ARG ADKAFKA_VERSION
+ARG ADKAFKA_DIR
 
 # install runtime libraries from additional packages section above
 USER root
@@ -71,7 +81,11 @@ RUN apt-get update && apt-get upgrade -y && \
     libxml2 \
     && rm -rf /var/lib/apt/lists/*
 
+COPY --from=developer /usr/lib/librdkafka* /usr/lib/
+
 USER ${USERNAME}
 
 # get the products from the build stage
-COPY --from=developer ${EPICS_ROOT} ${EPICS_ROOT}
+COPY --from=developer ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION}
+COPY --from=developer ${SUPPORT}/ADCore-${ADCORE_VERSION} ${SUPPORT}/ADCore-${ADCORE_VERSION}
+COPY --from=developer ${SUPPORT}/${ADKAFKA_DIR} ${SUPPORT}/${ADKAFKA_DIR}
