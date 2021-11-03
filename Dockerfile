@@ -1,8 +1,5 @@
 # EPICS ADCore Dockerfile
 # Adds the Area Detector base support required by all AD images
-ARG REGISTRY=ghcr.io/epics-containers
-ARG MODULES_VERSION=4.41r3.0
-
 ARG ADSUPPORT_VERSION=R1-9-1
 ARG ADCORE_VERSION=R3-10
 ARG ADKAFKA_VERSION=0.1
@@ -10,7 +7,7 @@ ARG ADKAFKA_DIR=ADKafka-0-1
 
 ##### build stage ##############################################################
 
-FROM ${REGISTRY}/epics-modules:${MODULES_VERSION} AS developer
+FROM ghcr.io/epics-containers/epics-modules:4.41r3.0 AS developer
 
 ARG ADSUPPORT_VERSION
 ARG ADCORE_VERSION
@@ -62,7 +59,7 @@ RUN make -j -C  ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} && \
 
 ##### runtime stage ############################################################
 
-FROM ${REGISTRY}/epics-modules:${MODULES_VERSION}.run AS runtime
+FROM ghcr.io/epics-containers/epics-modules:4.41r3.0.run AS runtime
 
 ARG ADSUPPORT_VERSION
 ARG ADCORE_VERSION
