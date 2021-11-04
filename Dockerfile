@@ -7,7 +7,7 @@ ARG ADKAFKA_DIR=ADKafka-0-1
 
 ##### build stage ##############################################################
 
-FROM ghcr.io/epics-containers/epics-modules:4.41.r3.1 AS developer
+FROM ghcr.io/epics-containers/epics-modules:4.41.r3.1.run AS developer
 
 ARG ADSUPPORT_VERSION
 ARG ADCORE_VERSION
