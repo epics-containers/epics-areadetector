@@ -5,7 +5,7 @@ ARG ADCORE_VERSION=R3-12-1
 
 ##### build stage ##############################################################
 
-FROM ghcr.io/epics-containers/epics-modules:1.0.0 AS developer
+FROM ghcr.io/epics-containers/epics-modules:1.1.1 AS developer
 
 ARG ADSUPPORT_VERSION
 ARG ADCORE_VERSION
@@ -26,7 +26,7 @@ RUN make -j -C  ${SUPPORT}/ADSupport-${ADSUPPORT_VERSION} && \
 
 ##### runtime stage ############################################################
 
-FROM ghcr.io/epics-containers/epics-modules:1.0.0.run AS runtime
+FROM ghcr.io/epics-containers/epics-modules:1.1.1 AS runtime
 
 ARG ADSUPPORT_VERSION
 ARG ADCORE_VERSION
